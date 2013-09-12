@@ -1,0 +1,65 @@
+/** 
+ * Class: profileView.js
+ * ---------------------
+ * Responsible for displaying a single profile on 
+ * the screen. The view listens for changes in the 
+ * underlying account model. The first change will
+ * happen when the model is first loaded
+ */ 
+
+
+define(['SocialNetView', 
+	'text!templates/profile.html', 
+	'text!templates/status.html', 
+	'models/Status', 
+	'views/statusView'], 
+       function(SocialNetView, profileTemplate, statusTemplate, Status, StatusView){
+	   
+	   var profileView = SocialNetView.extend({
+	       el: $('#content'), 
+
+	       /** 
+		* Method: initialize
+		* ------------------
+		* calls the bind method on the model. 
+		* @param1:    'change' means the action will occur whenever
+		*             any changes occur to the model. 
+		* @param2:    this.render is the function that will execute
+		*             every time the model changes
+		* @param3:    this refers to the view
+		*/ 
+	       
+	       initialize: function(){ 
+		   this.model.bind('change', this.render, this); 
+	       }, 
+
+	       render: function(){
+		   this.model.bind('change', this.render, this); 
+	       }, 
+
+
+	       /** 
+		* Method: render
+		* --------------
+		* the model is converted to JSON and passed along with 
+		* the view's HTML template to underscores ._template function
+		*/ 
+	       
+	       render: function(){
+		   this.$el.html(
+		       _.template(profileTemplate, this.model.toJSON())
+		   ); 
+		   
+		   var statusCollection = this.model.get('status'); 
+		   if ( null != statusCollection ){ 
+		       _.each(statusCollection, function ( statusJson ) { 
+			   var statusModel = new Status( statusJson ); 
+			   var statusHtml = (new StatusView({model: statusModel})).render().el; 
+			   $(statusHtml).prependTo('.status_list').hide().fadeIn('slow'); 
+		       }); 
+		   }
+	       }
+	   }); 
+	   
+	   return profileView; 
+}); 

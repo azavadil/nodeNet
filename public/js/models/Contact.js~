@@ -1,0 +1,15 @@
+/** 
+ * Note: 
+ * -----
+ * Creates the contact model which Backbone will use to populate 
+ * the contact list. The database model doesn't have a distinct
+ * Contact entity. Each contact list is embedded in the user 
+ * account record. 
+ */ 
+    
+
+define(function(require){ 
+    var Contact = Backbone.Model.extend({
+	}); 
+    return Contact; 
+}); 
