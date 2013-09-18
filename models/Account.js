@@ -9,8 +9,17 @@ module.exports = function(config, mongoose, nodemailer){
 	status: { type: String } 
     }); 
 
+    var Contact = new mongoose.Schema({
+	name: { 
+	    first: { type: String }, 
+	    last: { type: String } 
+	}, 
+	accountId: { type: mongoose.Schema.ObjectId }, 
+	add: { type: Date }, 
+	updated: { type: Date}
+    }); 
 
-    /** 
+   /** 
      * Note: 
      * -----
      * @param email: note this is set to unique
@@ -178,7 +187,7 @@ module.exports = function(config, mongoose, nodemailer){
 	var shaSum = crypto.createHash('sha256'); 
 	shaSum.update(password); 
 	
-	console.log('Regeristering ' + email); 
+	console.log('Registering ' + email); 
 	var user = new Account({
 	    email: email, 
 	    name: { 
