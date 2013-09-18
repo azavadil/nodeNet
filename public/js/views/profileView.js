@@ -70,10 +70,12 @@ define(['SocialNetView',
 
 
 	       postStatus: function(){ 
+		   console.log('postStatus triggered'); 
+
 		   var that = this; 
 		   var statusText = $('input[name=status]').val(); 
 		   
-		   var statusCollectoin = this.collection; 
+		   var statusCollection = this.collection; 
 		   
 		   $.post('/accounts/' + this.model.get('_id') + '/status',  {
 		       status: statusText
@@ -84,15 +86,12 @@ define(['SocialNetView',
 	       }, 
 
 	       prependStatus: function(statusModel){ 
+		   console.log('prependStatus triggered'); 
 		   var statusHtml = (new StatusView({model:statusModel})).render().el; 
 		   $(statusHtml).prependTo('.status_list').hide().fadeIn('slow'); 
 	       }, 
 
-	       render: function(){
-		   this.model.bind('change', this.render, this); 
-	       }, 
-
-
+ 
 	       /** 
 		* Method: render
 		* --------------

@@ -13,8 +13,8 @@ module.exports = function(app, models){
 	    return; 
 	}
 
-	models.Account.login(email, password, function(success){ 
-	    if(!success){
+	models.Account.login(email, password, function(account){ 
+	    if( !account ){
 		res.send(401); 
 		return; 
 	    }

@@ -85,15 +85,18 @@ module.exports = function(app, models){
      * 
      * After Mongoose has loaded the account in question, the status
      * is posted to that account's status feed and activity feed.
-     * NTD: after contact list functionality is add, the status 
+     * NTD: after contact list functionality is added, the status 
      * will push out each of the accounts contacts activity lists
      */ 
 
     app.post('/accounts/:id/status', function(req, res){
+
+	console.log("post/accounts/:id/status triggered"); 
 	var accountId = req.params.id == 'me' 
 	    ? req.session.accountId 
 	    : req.params.id; 
 	models.Account.findById( accountId, function( account ){ 
+	    
 	    status = { 
 		name: account.name, 
 		status: req.param('status', '')

@@ -1,3 +1,12 @@
+/** 
+ * Note: 
+ * -----
+ * the indexView extends a plain Backbone view and renders text into the HTML
+ * element tagged with the content identifier (~/views/index.jade). 
+ */
+
+
+
 define(['SocialNetView', 
 	'text!templates/index.html', 
         'views/statusView', 
@@ -9,7 +18,7 @@ define(['SocialNetView',
    
 	   var indexView = Backbone.View.extend({
 	       
-	       el: $('#content'), 
+	       el: $('#content'),    //~/views/index.jade
 
 	       events:{ 
 		   'submit form': 'updateStatus'
@@ -33,6 +42,7 @@ define(['SocialNetView',
 	       }, 
 
 	       updateStatus: function(){
+		   console.log("Update status triggered"); 
 		   var statusText = $('input[name=status]').val(); 
 		   var statusCollection = this.collection; 
 		   $.post('/accounts/me/status', { 

@@ -1,3 +1,22 @@
+/** 
+ * Note: 
+ * -----
+ * Backbone.js provides a Router class that handles movement between the main views of 
+ * your application. When faced with a URL like http://localhost:8080/#register the 
+ * router understands it should display content based upon the content after the 
+ * the hash (#) character - "register" in this case. 
+ * 
+ * The router describes how to display various screens.  e.g.
+ * 
+ * http://localhost:8080/#register => register: function() { ..
+ * http://localhost:8080/#login => login: function() { ...
+ * http://localhost:8080/#index => index: function() { ... 
+ * http://localhost:8080/#forgotpassword => function() { ... 
+ */ 
+
+
+
+
 define(['views/indexView', 
 	'views/registerView', 
 	'views/loginView', 
@@ -44,6 +63,15 @@ define(['views/indexView',
 		   'profile/:id': 'profile', 
 		   'contacts/:id': 'contacts'
 	       }, 
+
+	       /** 
+		* Method: changeView
+		* ------------------
+		* Does the actual work of displaying each view by calling
+		* its render function. When a view is changed, the old view
+		* is told to stop listening to web page events through
+		* undelegateEvents
+		*/ 
 
 	       changeView: function(view){
 

@@ -89,6 +89,16 @@ module.exports = function(config, mongoose, nodemailer){
 	}); 
     }
 
+    /** 
+     * Method: login
+     * -------------
+     * The login function queries MongoDB and returns a truth flag 
+     * indicating whether or not it was able to find a user whose email
+     * address and encrypted password match the login credentials 
+     * supplied by Node. 
+     */ 
+
+
     var login = function(email, password, callback){ 
 	var shaSum = crypto.createHash('sha256'); 
 	shaSum.update(password); 

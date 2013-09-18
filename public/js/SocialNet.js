@@ -1,3 +1,13 @@
+/** 
+ *
+ */ 
+
+
+
+
+
+
+
 define(['router'], function(router){ 
     var initialize = function(){ 
 	checkLogin(runApplication); 
