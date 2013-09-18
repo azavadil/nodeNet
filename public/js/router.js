@@ -22,6 +22,18 @@ define(['views/indexView',
 	   var SocialRouter = Backbone.Router.extend({
 
 	       currentView: null, 
+
+	       /** 
+		* Note: 
+		* -----
+		* Implements a global event dispatcher. Creates
+		* a socketEvents property owned by the router (extends
+		* the Backbone.Events object). This creates a standalone
+		* event object (not attached to a particular model or view)
+		* which can be used independently of views.
+		*/ 
+
+	       socketEvents: _.extend({}, Backbone.Events), 
 	       
 	       routes: { 
 		   'addcontact': 'addcontact', 
@@ -67,9 +79,18 @@ define(['views/indexView',
 		   this.changeView(new LoginView()); 
 	       }, 
 
+	       /**
+		* Note: 
+		* -----
+		* the socketEvents object is passed into the login view 
+		* when the login route is activated. This causes the socketEvents
+		* object to appear in the view's initialization objects which we
+		* will now trap inside the view. 
+		*/ 
+	       
 
 	       login: function(){
-		   this.changeView(new LoginView()); 
+		   this.changeView(new LoginView({socketEvents: this.socketEvents})); 
 	       }, 
 
 	       forgotPassword: function(){ 

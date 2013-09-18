@@ -8,32 +8,60 @@
  */ 
 
 
+
 var express = require('express'); 
-var app = express(); 
+var http = require('http'); 
 var nodemailer = require('nodemailer'); 
 var MemoryStore = require('connect').session.MemoryStore; 
+var app = express(); 
 var dbPath = 'mongodb://localhost/nodebackbone';
+var fs  = require('fs'); 
 
+// Create an http server
+app.server = http.createServer(app); 
+
+
+// Create a session store to share between methods
+app.sessionStore = new MemoryStore(); 
+
+
+//Import the data layer
 var mongoose = require('mongoose'); 
 var config = { 
     mail: require('./config/mail') 
 }; 
 
+
+// Import the models
 var models = { 
     Account: require('./models/Account')(config, mongoose, nodemailer)
 }; 
 
 
 
+/** 
+ * Note: 
+ * -----
+ * In order to share the session across different parts
+ * of the application, a key item is added to the session
+ * store created during the application configuration stage. 
+ * This is the cookie key that will be shared between the frontend
+ * client and the backend server. It contains a unique ID that
+ * can be compared against the session store to get the user's
+ * stored session data
+ */ 
+
 app.configure(function(){
+    app.sessionSecret = '1mancanmake'; 
     app.set('view engine', 'jade'); 
     app.use(express.static(__dirname + '/public'));
     app.use(express.limit('1mb'));
     app.use(express.bodyParser()); 
     app.use(express.cookieParser()); 
     app.use(express.session({
-	secret:"1mancanmake", 
-	store: new MemoryStore() 
+	secret: app.sessionSecret,
+	key: 'express.sid',        
+	store: app.sessionStore
     })); 
     mongoose.connect(dbPath, function onMongooseError(err){ 
 	if(err) throw err; 
@@ -41,297 +69,23 @@ app.configure(function(){
 
 }); 
 
+// Import the routes
+fs.readdirSync('routes').forEach(function(file) { 
+    if( file[0] == '.' ) { 
+	return; 
+    }
+    var routeName = file.substr(0, file.indexOf('.')); 
+    require('./routes/' + routeName)(app, models); 
+}); 
+
+
 app.get('/', function(req, res){
     console.log("'/' reached"); 
     res.render('index.jade'); 
 }); 
 
 
-app.post('/login', function(req, res){ 
-    console.log('login request'); 
-    var email = req.param('email', null); 
-    var password = req.param('password', null); 
-    
-    if( null == email || email.length < 1 || null == password || password.length < 1 ) { 
-	res.send(400); 
-	return; 
-    }
 
-    models.Account.login(email, password, function(success){ 
-	if(!success){
-	    res.send(401); 
-	    return; 
-	}
-	
-        console.log('login was successful');
-	req.session.loggedIn = true; 
-	req.session.accountId = account._id; 
-	res.send(200); 
-    }); 
-}); 
-
-
-app.post('/register', function(req, res){
-    var firstName = req.param('firstName', ''); 
-    var lastName = req.param('lastName', ''); 
-    var email = req.param('email', null); 
-    var password = req.param('password', null); 
-    
-    if( null == email || null == password || null == password || password.length < 1) { 
-	res.send(400); 
-	return; 
-    }
-    
-    models.Account.register(email, password, firstName, lastName); 
-    res.send(200); 
-}); 
-
-
-
-app.get('/account/authenticated', function(req, res){
-    if ( req.session.loggedIn ){ 
-	res.send(200); 
-    } else { 
-	res.send(401); 
-    }
-}); 
-
-
-
-
-/**  
- * Handler: get/accounts/:id/activity
- * ----------------------------------
- * the activity list call duplicates that 
- * status call. The handlers exist for the sole
- * purpose of filling StatusCollection objects in 
- * Backbone. The same data is present in the account model and 
- * can be pulled from there without making direct requests 
- * for each list.  
- */ 
-
-app.get('/accounts/:id/activity', function(req, res){
-    var accountId = req.params.id == 'me' 
-	? req.session.accountId 
-	: req.params.id; 
-    models.Account.findById( accountId, function(account) { 
-	res.send(account.activity); 
-    }); 
-})
-
-
-
-/** 
- * Handler: get/accounts/:id/:status
- * ---------------------------------
- * Getting the status list is straightforward: load the 
- * account and return its status list property. 
- * NTD: If the account doesn't exist Node will report and 
- * error
- */ 
-
-
-app.get('/accounts/:id:/status', function(req, res) {
-    var accountId = req.params.id == 'me' 
-	? req.session.accountId 
-	: req.params.id; 
-    models.Account.findById(accountId, function(account){
-	res.send( account.status ); 
-    }); 
-}); 
-
-/**
- * Handler: post/accounts/:id/status
- * ---------------------------------
- * The request returns right away regardless of what happens
- * to the status returning control to the frontend. 
- * 
- * After Mongoose has loaded the account in question, the status
- * is posted to that account's status feed and activity feed.
- * NTD: after contact list functionality is add, the status 
- * will push out each of the accounts contacts activity lists
- */ 
-
-app.post('/accounts/:id/status', function(req, res){
-    var accountId = req.params.id == 'me' ? req.session.accountId : req.params.id; 
-    models.Account.findById( accountId, function( account ){ 
-	status = { 
-	    name: account.name, 
-	    status: req.param('status', '')
-	}; 
-	account.status.push(status); 
-
-	
-	account.activity.push(status); 
-	account.save(function( err ) { 
-	    if( err ) { 
-		console.log('Error saving account: ' + err ); 
-	    }
-	}); 
-    }); 
-    res.send(200)
-}); 
-
-
-
-/** 
- * Handler: delete/accounts/:id/contact
- * ------------------------------------
- * Removing a contact: loading account data
- *                     find the offending contact
- *                     remove the offending contact
- *                     from the contact list
- *                     save the mutated account 
- * 
- * Involves two database scans and two input validations
- * First, to verify that you are who you say you are
- * and second to find your removal target. 
- * 
- * Note the response at the end of the function. All of 
- * the contact deletion occurs inside the account function
- * callback. The response will not wait for the contact 
- * removal to complete before sending. 
- * 
- */
-
-
-
-app.delete('/accounts/:id/contact', function(req, res){ 
-    var accountId = req.params.id == 'me'
-	? req.session.accountId 
-	: req.params.id; 
-    
-    var contactId = req.param('contactId', null); 
-    
-    // Missing contactId don't bother going any further
-    if ( null == account.contactId ) { 
-	res.send(400); 
-	return; 
-    }
-
-    /**
-     * Note: 
-     * -----
-     * load account data and find the offending contact
-     * 
-     * Removing the offending contact and saving the 
-     * the mutated account is handled in the Account 
-     * method .removeContact
-     */ 
-
-    models.Account.findById( accountId, function( account ) { 
-	if ( !account ) { 
-	    return; 
-	}
-	
-	models.Account.findById( contactId, function( contact, err ){ 
-	    if ( !contact ) { 
-		return;
-	    }
-	    
-	    models.Account.removeContact( account, contactId ); 
-	    //Kill the reverse link
-	    models.Account.removeContact( contact, accountId ) ; 
-	}); 
-    }); 
-	
-    /**
-     * Note: 
-     * -----
-     * Not in callback - this endpoint returns immeditately
-     * and processes in the background
-     */
-	
-    res.send(200); 
-})
-	 
-/** 
- * Handler: get/accounts/:id
- * -------------------------
- * validates whether or not you are allowed to post
- * comments on other people's streams. Load's your 
- * contats' account details and checks the relationship
- */  
-
-
-app.get('/accounts/:id', function(req, res){
-    var accountId = req.params.id == 'me'
-	?req.session.accountId 
-	:req.params.id; 
-    models.Account.findById(accountId, function( account ) { 
-	if ( accountId == 'me' 
-	     || models.Account.hasContact(account, req.session.accountId ) ){
-	    account.isFriend = true; 
-	}
-	res.send( account ); 
-    }); 
-}); 
-
-
-
-/** 
- * Handler: post/accounts/:id/contact
- * ----------------------------------
- * Note the meaning of the route. 
- * You're saying post a contact belonging to
- * Account who's ID is
- */ 
-
-app.post('/accounts/:id/contact', function(req, res){
-    var accountId = req.params.Id == 'me'
-	? req.session.accountId
-	: req.params.id; 
-    var contactId = req.param('contactId', null); 
-
-    if( null == contactId ){ 
-	res.send(400); 
-	return; 
-    }
-
-    models.Accounts.findById(accountId, function( account ){ 
-	if ( account ){ 
-	    models.Account.findById(contactId, function( contact ){ 
-		models.Account.addContact( account, contact ); 
-		
-		// make the reverse link
-		models.Account.addContact( contact, account ); 
-		account.save(); 
-	    }); 
-	}
-    }); 
-    
-    /**
-     * Note: 
-     * -----
-     * not in the callback. This endpoint returns immediately and
-     * the account changes are processed in the background
-     */ 
-    res.send(200); 
-}); 
-
-      
-    
-
-
-/** 
- * Handler: account details
- * ------------------------
- * when prompted for account information, 
- * queries MongoDB for the correct account and 
- * outputs the data in JSON format  
- *
- * NTD: security issue, currently send entire 
- *      account object which includes the
- *      the hashed password
- */ 
-
-
-app.get('/accounts/:id', function(req, res){
-    var accountId = req.params.id =='me' ? req.session.accountId : req.params.id; 
-    models.Account.findById( accountId, function( account ){ 
-	res.send( account ); 
-    }); 
-}); 
 
 /** 
  * Handler: post/contacts/find
@@ -363,75 +117,6 @@ app.post('/contacts/find', function(req, res){
 }); 
 
 
-
-
-/**
- * Handler: get/accounts/:id/contacts
- * ----------------------------------
- * All of the heavy lifting is done by Backbone when
- * it comes to displaying the contact list. Fetching the
- * account model and returning its list of contacts will be 
- * the backend server's role. 
- * 
- * The single most common cause of difficult errors is the 
- * inadvertent closing of the response before the request
- * has had a chance to complete. 
- *
- * Here the accounts contacts are sent to the response object
- * withn the callback function of the account model's findById 
- * method. If a reponse was made outside of the callback, the web 
- * browser would always receive an empty contact list
- */ 
-
-app.get('/accounts/:id/contacts', function(req, res){
-    var accountId = req.params.id == 'me'
-	? req.session.accountId
-	: req.params.id; 
-    models.Account.findById(accountId, function( account ) { 
-	res.send( account.contacts ); 
-    }); 
-}); 
-
-
-
-
-app.post('/forgotpassword', function(req,res){ 
-    var hostname = req.headers.host; 
-    var resetPasswordUrl = 'http://' + hostname + '/resetPassword'; 
-    var email = req.param('email', null); 
-    if( null == email || email.length < 1 )  {
-	res.send(400); 
-	return; 
-    }
-
-
-    models.Account.forgotPassword(email, resetPasswordUrl, function(success){
-	if (success){
-	    res.send(200); 
-	} else { 
-	    //Username or password not found
-	    res.send(404); 
-	}
-    }); 
-}); 
-
-
-app.get('/resetPassword', function(req, res){
-    var accountId = req.param('accountId', null); 
-    res.render('resetPassword.jade', {locals:{accountId: accountId}}); 
-}); 
-
-app.post('/resetPassword', function(req, res){
-    var accountId = req.param('accountId', null); 
-    var password = req.param('password', null); 
-    if (null != accountId && null != password ) {
-	Account.changePassword(accountId, password); 
-    }
-    res.render('resetPasswordSuccess.jade'); 
-})
-
-
-
-app.listen(8080); 
+app.server.listen(8080); 
 console.log("Listening on port 8080..."); 
 
