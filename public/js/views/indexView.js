@@ -12,9 +12,7 @@
  * job is to create an HTML representation of the status and prepend it to the 
  * list of statuses which have already been rendered
  * 
- * The page loads with the statuses already in place. The onStatusAdded function
- * also looks forward into the future when the web browser receive async updates
- * from the server about friend changes. 
+ * The page loads with the statuses already in place.
  */
 
 
@@ -52,10 +50,15 @@ define(['SocialNetView',
 		* Function: onStatusAdded
 		* -----------------------
 		* .status_list found in ~/public/templates/index.html
+		* onStatusAdded function looks forward into the future 
+		* when the web browser receive async updates from the 
+		* server about friend changes. onStatusAdded will cause
+		* those updates to animate onto the screen immediately
 		*/ 
 
 	       onStatusAdded: function(status){
 		   console.log("~/public/js/views/indexView.js.onStatusAdded triggered"); 
+		
 		   var statusHtml = (new StatusView({model:status})).render().el; 
 		   $(statusHtml).prependTo('.status_list').hide().fadeIn('slow'); 
 	       }, 
