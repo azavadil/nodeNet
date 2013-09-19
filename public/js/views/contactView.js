@@ -1,3 +1,12 @@
+/** 
+ * Note: 
+ * -----
+ * Depending on the context the contact is show, there may
+ * or may not be interactions available to the user, or the 
+ * may have a chanc to add or remove a contact from their list
+ * The contact view delegates all of these interactions from the 
+ * web browser to the backend server and updates the view inline. 
+ */
 
 
 

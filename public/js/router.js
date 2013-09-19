@@ -103,8 +103,16 @@ define(['views/indexView',
 		   statusCollection.fetch();
 	       }, 
 
+	       /** 
+		* Route: addcontact
+		* -----------------
+		* Triggered by ~/public/js/views/contactsView.js
+		* triggers the router to load and render the addcontact
+		* view. 
+		*/ 
+
 	       addcontact: function(){ 
-		   this.changeView(new LoginView()); 
+		   this.changeView(new AddContactView()); 
 	       }, 
 
 	       /**

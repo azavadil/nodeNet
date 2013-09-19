@@ -72,6 +72,7 @@ module.exports = function(app, models){
 	    ? req.session.accountId 
 	    : req.params.id; 
 	models.Account.findById(accountId, function(account){
+
 	    res.send( account.status ); 
 	}); 
     }); 
