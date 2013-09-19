@@ -2,7 +2,7 @@
  * Note: 
  * -----
  * The contact list's purpose is to aggregate all of an account's contacts
- * into a single view, displaying only the most recent top leve information. 
+ * into a single view, displaying only the most recent top level information. 
  * 
  * The contact list is responsible for generating an overall 'container' page as
  * well as each of the 'child' elements containing contacts belonging to an
@@ -14,12 +14,12 @@
  * To accomplish this the render functionn is bound to the collection's
  * reset event during the contact list's initialize routine. 
  *
- *
- *
- *The contacts view will contain a list of users added to 
+ * The contacts view will contain a list of users added to 
  * each users contact list. Each line item will display the 
  * contacts name, profile photo, and link to his account
- * details page
+ * details page. 
+ * 
+ * 
  */ 
 
 

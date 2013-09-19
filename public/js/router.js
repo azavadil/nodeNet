@@ -107,6 +107,7 @@ define(['views/indexView',
 		* Route: addcontact
 		* -----------------
 		* Triggered by ~/public/js/views/contactsView.js
+		*
 		* triggers the router to load and render the addcontact
 		* view. 
 		*/ 
@@ -144,9 +145,10 @@ define(['views/indexView',
 	       }, 
 
 	       contacts: function(id){
+		   console.log("~/public/js/router.js | contacts triggered"); 
 		   var contactId = id ? id : 'me'; 
 		   var contactsCollection = new ContactCollection(); 
-		   contactsCollection.url = '/accounts/' + contactId + 'contacts'; 
+		   contactsCollection.url = '/accounts/' + contactId + '/contacts'; 
 		   this.changeView( new ContactsView({
 		       collection: contactsCollection 
 		   })); 

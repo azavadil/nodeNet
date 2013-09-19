@@ -92,7 +92,7 @@ module.exports = function(app, models){
 
     app.post('/accounts/:id/status', function(req, res){
 
-	console.log("post/accounts/:id/status triggered"); 
+	console.log("~/routes/accounts.js | post/accounts/:id/status triggered"); 
 	var accountId = req.params.id == 'me' 
 	    ? req.session.accountId 
 	    : req.params.id; 

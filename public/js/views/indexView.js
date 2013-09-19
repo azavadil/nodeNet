@@ -35,6 +35,8 @@ define(['SocialNetView',
 	       }, 
 	       
 	       initialize: function(){ 
+		   console.log("~/public/js/views/indexView.js | initialize triggered"); 
+
 		   this.collection.on('add', this.onStatusAdded, this); 
 		   this.collection.on('reset', this.onStatusCollectionReset, this); 
 	       }, 
