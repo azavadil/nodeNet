@@ -3,6 +3,18 @@
  * -----
  * the indexView extends a plain Backbone view and renders text into the HTML
  * element tagged with the content identifier (~/views/index.jade). 
+ * 
+ * This view will accept form input from the user. 
+ * 
+ * The collection object is an instance of StatusCollection that
+ * extends the Backbone.Collection object. During the view's initialization
+ * the collection' add event is bound to the onStatusAdded fucntion whose
+ * job is to create an HTML representation of the status and prepend it to the 
+ * list of statuses which have already been rendered
+ * 
+ * The page loads with the statuses already in place. The onStatusAdded function
+ * also looks forward into the future when the web browser receive async updates
+ * from the server about friend changes. 
  */
 
 
@@ -36,13 +48,30 @@ define(['SocialNetView',
 		   }); 
 	       }, 
 
+	       /** 
+		* Function: onStatusAdded
+		* -----------------------
+		* .status_list found in ~/public/templates/index.html
+		*/ 
+
 	       onStatusAdded: function(status){
+		   console.log("~/public/js/views/indexView.js.onStatusAdded triggered"); 
 		   var statusHtml = (new StatusView({model:status})).render().el; 
 		   $(statusHtml).prependTo('.status_list').hide().fadeIn('slow'); 
 	       }, 
 
+
+	       /** 
+		* Function: updateStatus
+		* ----------------------
+		* The updateStatus function collects the information 
+		* supplied by the user, posts it to the Express backend, 
+		* generates a new status object, and adds the object to 
+		* the view's collection object
+		*/ 
+
 	       updateStatus: function(){
-		   console.log("Update status triggered"); 
+		   console.log("~/public/js/views/indexView.js.updateStatus triggered"); 
 		   var statusText = $('input[name=status]').val(); 
 		   var statusCollection = this.collection; 
 		   $.post('/accounts/me/status', { 

@@ -80,7 +80,7 @@ module.exports = function(app, models){
     /**
      * Handler: post/accounts/:id/status
      * ---------------------------------
-     * The request returns right away regardless of what happens
+     *The request returns right away regardless of what happens
      * to the status returning control to the frontend. 
      * 
      * After Mongoose has loaded the account in question, the status

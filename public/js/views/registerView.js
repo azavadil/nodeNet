@@ -1,3 +1,14 @@
+/** 
+ * Class: registerView
+ * -------------------
+ * The registerView class takes data submitted by the user
+ * and posts it to the backend server. The register function
+ * returns false in order to disable the default form functionality 
+ * which would trigger a page reload. A reload is not required 
+ * because the server communication has been handled behind the 
+ * scenes
+ */ 
+
 
 
 define(['SocialNetView', 

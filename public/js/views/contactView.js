@@ -1,3 +1,6 @@
+
+
+
 define(['SocialNetView', 
 	'text!templates/contact.html'], 
        function(SocialNetView, contactTemplate){ 
@@ -27,7 +30,7 @@ define(['SocialNetView',
 
 
 	       /** 
-		* Method: removeContact
+		* Function: removeContact
 		* ---------------------
 		* Unlike the other requests sent to the server so far 
 		* this event uses jQuery's .ajax method directly rather

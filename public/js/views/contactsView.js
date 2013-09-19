@@ -1,3 +1,14 @@
+/** 
+ * Note: 
+ * -----
+ * The contacts view will contain a list of users added to 
+ * each users contact list. Each line item will display the 
+ * contacts name, profile photo, and link to his account
+ * details page
+ */ 
+
+
+
 define(['SocialNetView', 
 	'views/contactView', 
 	'text!templates/contacts.html'],

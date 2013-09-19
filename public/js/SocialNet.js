@@ -1,5 +1,19 @@
 /** 
- *
+ * Note: 
+ * -----
+ * The first thing the application needs to do 
+ * is make an AJAX request to the Node backend server. 
+ * Node verifies that the current session, identified
+ * by a session ID in the request header - is linked with 
+ * a valid access token.
+ * 
+ * checkLogin(runApplication) worked together to do the following
+ * runApplication is the callback to checkLogin. If the user is 
+ * logged in, then runApplication is called with true. Otherwise
+ * runApplication is called with false. 
+ * 
+ * If called with true, runApplication directs to ~/#index
+ * If called with false, runApplication directs to ~/#login
  */ 
 
 
@@ -27,9 +41,9 @@ define(['router'], function(router){
 
     var runApplication = function(authenticated){
 	if(!authenticated){
-	    window.location.hash = 'login'; 
+	    window.location.hash = 'login';   //send to ~/#login
 	} else { 
-	    window.location.hash = 'index'; 
+	    window.location.hash = 'index';   //send to ~/#index
 	}
 	Backbone.history.start(); 
     };

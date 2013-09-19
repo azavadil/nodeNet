@@ -1,3 +1,6 @@
+ 
+
+
 module.exports = function(config, mongoose, nodemailer){
     var crypto = require('crypto'); 
 
@@ -90,12 +93,14 @@ module.exports = function(config, mongoose, nodemailer){
     }
 
     /** 
-     * Method: login
+     * Function: login
      * -------------
      * The login function queries MongoDB and returns a truth flag 
      * indicating whether or not it was able to find a user whose email
      * address and encrypted password match the login credentials 
      * supplied by Node. 
+     * 
+     * The login function is called in ~/public/routes/authentication.js
      */ 
 
 
@@ -109,7 +114,7 @@ module.exports = function(config, mongoose, nodemailer){
 
 
     /** 
-     * Method: findByString
+     * Function: findByString
      * --------------------
      * The goal for the search tool is to provide a simple user interface. 
      * One was to accomplish simplicity is to use regular expressions to 

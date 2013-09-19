@@ -42,8 +42,20 @@ module.exports = function(app, models){
 	res.send(200); 
     }); 
 
-
-
+    
+    /** 
+     * Note: 
+     * -----
+     * Notice that the session varible is attached to the request
+     * object. We usually think of a request message as a message 
+     * sent from the web browser to the web server. By the time
+     * the request reaches this route, it contains more than just
+     * the web browser's message. It also contains information 
+     * attached by the Express middleware. The web browser 
+     * sends an identifier which the server uses to read the user's
+     * session data from the memory store.
+     */ 
+    
     app.get('/account/authenticated', function(req, res){
 	if ( req.session && req.session.loggedIn ){ 
 	    res.send(200); 
@@ -83,6 +95,17 @@ module.exports = function(app, models){
 	var accountId = req.param('accountId', null); 
 	res.render('resetPassword.jade', {locals:{accountId: accountId}}); 
     }); 
+
+
+    /** 
+     * Note: 
+     * -----
+     * The server side reset password handler is interesting because 
+     * it handles both the initial GET view as well at the POST request
+     * 
+     * The first route listens for a GET request at http://localhost:8080/resetPassword
+     * and responds with the Jade template
+     */  
 
     app.post('/resetPassword', function(req, res){
 	var accountId = req.param('accountId', null); 

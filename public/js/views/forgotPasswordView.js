@@ -1,3 +1,8 @@
+/**
+ * 
+ */ 
+
+
 define(['SocialNetView', 
 	'text!templates/forgotpassword.html'], 
        function(SocialNetView, forgotpasswordTemplate){
