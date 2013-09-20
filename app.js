@@ -101,7 +101,12 @@ app.get('/', function(req, res){
  */
 
 app.post('/contacts/find', function(req, res){
+    
+    console.log("~/app.js | post/contacts/find triggered"); 
+
     var searchStr = req.param('searchStr', null); 
+
+    console.log("searchStr = " + searchStr); 
     if ( null == searchStr ){ 
 	res.send(400);  //400: Invalid Request Arguments 
 	return; 

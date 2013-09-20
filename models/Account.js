@@ -122,7 +122,7 @@ module.exports = function(config, mongoose, nodemailer){
      * in each account
      */ 
     
-   var findByString = function(searcStr, callback){
+   var findByString = function(searchStr, callback){
        var searchRegex = new RegExp(searchStr, 'i'); 
        Account.find({
 	   $or: [

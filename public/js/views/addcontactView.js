@@ -41,6 +41,7 @@ define(['SocialNetView',
 
 	       
 	       search: function(){ 
+		   console.log("~/public/js/views/addcontactView.js | search triggered"); 
 		   var view = this; 
 		   $.post('/contacts/find', 
 			  this.$('form').serialize(), function(data){
@@ -58,9 +59,9 @@ define(['SocialNetView',
 		   this.$el.html(_.template( addcontactTemplate )); 
 		   if( null != resultList ){ 
 		       _.each(resultList, function( contactJson ) { 
-			   var contactModel = new Contact(contactJson); 
+			   var contactModel = new Contact( contactJson ); 
 			   var contactHtml = (new ContactView(
-			       {addButton: true, mode: contactModel}
+			       {addButton: true, model: contactModel}
 			   )).render().el; 
 			   $('#results').append(contactHtml); 
 		       }); 

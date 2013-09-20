@@ -59,7 +59,7 @@ define(['SocialNetView',
 		*/ 
 
 	       onStatusAdded: function(status){
-		   console.log("~/public/js/views/indexView.js.onStatusAdded triggered"); 
+		   console.log("~/public/js/views/indexView.js | onStatusAdded triggered"); 
 		
 		   var statusHtml = (new StatusView({model:status})).render().el; 
 		   $(statusHtml).prependTo('.status_list').hide().fadeIn('slow'); 
@@ -76,7 +76,7 @@ define(['SocialNetView',
 		*/ 
 
 	       updateStatus: function(){
-		   console.log("~/public/js/views/indexView.js.updateStatus triggered"); 
+		   console.log("~/public/js/views/indexView.js | updateStatus triggered"); 
 		   var statusText = $('input[name=status]').val(); 
 		   var statusCollection = this.collection; 
 		   $.post('/accounts/me/status', { 
