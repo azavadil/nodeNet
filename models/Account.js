@@ -44,7 +44,8 @@ module.exports = function(config, mongoose, nodemailer){
 	    year: {type: Number}
         }, 
 	photoURL: {type:String}, 
-	biography: {type: String}, 
+	biography: {type: String},
+        contacts: [Contact], 
 	status: [Status], 
 	activity: [Status]
     }); 
