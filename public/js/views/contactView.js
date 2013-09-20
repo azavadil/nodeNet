@@ -26,6 +26,7 @@ define(['SocialNetView',
 	       }, 
 	       
 	       addContact: function(){ 
+		   console.log("~/public/js/views/contactView.js | addContact triggered"); 
 		   var $responseArea = this.$(".actionarea"); 
 		   $.post("/accounts/me/contact", 
 			  {contactId: this.model.get("_id")}, 

@@ -145,7 +145,7 @@ module.exports = function(config, mongoose, nodemailer){
     var addContact = function(account, addcontact){ 
 	contact = { 
 	    name: addcontact.name, 
-	    accountId: addcontact_id, 
+	    accountId: addcontact._id, 
 	    added: new Date(), 
 	    updated: new Date()
 	}; 
