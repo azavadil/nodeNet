@@ -36,14 +36,15 @@ define(['SocialNetView',
 	       }, 
 	       
 	       render: function(){
+		   console.log("~/public/js/views/contactsView.js | render triggered"); 
 		   this.$el.html(contactsTemplate); 
 	       }, 
 	       
-	       renderCollection: function(collection){ 
-		   collection.each(function(contact){
-		       var statusHtml = (new ContactView(
-			   { removeButton: true, model: contact}
-			   )).render().el; 
+	       renderCollection: function( collection ){ 
+		   $('.contacts_list').empty(); 
+		   collection.each(function( contact ){
+		       console.log("~/public/js/views/contactsView.js | renderCollection | each " ); 
+		       var statusHtml = (new ContactView( {removeButton: true, model: contact})).render().el; 
 		       $(statusHtml).appendTo('.contacts_list'); 
 		   }); 
 	       }

@@ -27,6 +27,8 @@ module.exports = function(app, models){
      */ 
 
     app.get('/accounts/:id/contacts', function(req, res){
+	console.log("~/routes/accounts.js | get/accounts/:id/contacts triggered"); 
+
 	var accountId = req.params.id == 'me'
 	    ? req.session.accountId
 	    : req.params.id; 

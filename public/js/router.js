@@ -145,7 +145,7 @@ define(['views/indexView',
 	       }, 
 
 	       contacts: function(id){
-		   console.log("~/public/js/router.js | contacts triggered"); 
+		   console.log("~/public/js/router.js | contacts triggered | rendering ContactsView"); 
 		   var contactId = id ? id : 'me'; 
 		   var contactsCollection = new ContactCollection(); 
 		   contactsCollection.url = '/accounts/' + contactId + '/contacts'; 

@@ -31,6 +31,7 @@ define(['SocialNetView',
 		   $.post("/accounts/me/contact", 
 			  {contactId: this.model.get("_id")}, 
 			  function onSuccess(){ 
+			      console.log("~/public/js/views/contactView.js | addContact | onSuccess triggered"); 
 			      $responseArea.text("Contact Added"); 
 			  }, function onError(){ 
 			      $responseArea.text("Could not add contact"); 
