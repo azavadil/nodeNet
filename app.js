@@ -16,9 +16,25 @@ var MemoryStore = require('connect').session.MemoryStore;
 var app = express(); 
 var dbPath = 'mongodb://localhost/nodebackbone';
 var fs  = require('fs'); 
+var events = require('events'); 
 
 // Create an http server
 app.server = http.createServer(app); 
+
+
+//Create an event dispatcher
+var eventDispatcher = new events.EventEmitter(); 
+app.addEventListener = function ( eventName, callback ){ 
+    eventDispatcher.on( eventName, callback ); 
+}; 
+
+app.removeEventListener = function( eventName, callback ){ 
+    eventDispatcher.removeListener( eventName, callback ); 
+}; 
+
+app.triggerEvent = function( eventName, eventOptions ) { 
+    eventDispatcher.emit( eventName, eventOptions ); 
+}; 
 
 
 // Create a session store to share between methods
@@ -80,7 +96,6 @@ fs.readdirSync('routes').forEach(function(file) {
 
 
 app.get('/', function(req, res){
-    console.log("'/' reached"); 
     res.render('index.jade'); 
 }); 
 

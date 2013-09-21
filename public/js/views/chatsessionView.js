@@ -4,7 +4,7 @@
  * []     check for a single character
  * \s     match white space characters
  * ^      negation
- * 
+ */ 
 
 
 define(['SocialNetView', 

@@ -40,6 +40,7 @@ define(['Sockets',
 			   console.error('unable to connect', reason); 
 		       })
 		       .on('connect', function(){ 
+			   console.log("~/public/js/SocialNetSockets.js | connectSocket | .onConnect triggered"); 
 			   eventDispatcher.bind('socket:chat', sendChat); 
 			   socket.on('chatserver', function(data) { 
 			       eventDispatcher.trigger('socket:chat:start:' + data.from); 
