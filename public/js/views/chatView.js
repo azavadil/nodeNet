@@ -80,7 +80,7 @@ define(['SocialNetView',
 		   $('.chat_list').empty(); 
 		   collection.each(function(contact){
 		       //spawn chat
-		       var chatItemView = new ChatItemView({socketEvents: socketEvents, 
+		       var chatItemView = new ChatItemView({socketEvents: that.socketEvents, 
 							    model: contact} ); 
 		       chatItemView.bind('chat:start', that.startChatSession, that); 
 		       var statusHtml = (chatItemView).render().el; 

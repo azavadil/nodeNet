@@ -40,10 +40,11 @@ define(['router'], function(router){
     }; 
 
     var runApplication = function(authenticated){
-	if(!authenticated){
-	    window.location.hash = 'login';   //send to ~/#login
+	if( authenticated ){
+	    router.socketEvents.trigger('app:loggedin'); 
+	    window.location.hash = 'index';   //send to ~/#login
 	} else { 
-	    window.location.hash = 'index';   //send to ~/#index
+	    window.location.hash = 'login';   //send to ~/#index
 	}
 	Backbone.history.start(); 
     };
