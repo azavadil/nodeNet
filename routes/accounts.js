@@ -220,6 +220,7 @@ module.exports = function(app, models){
 	    res.send(400); 
 	    return; 
 	}
+	console.log("~/routes/accounts.js | post/accounts/:id/contact |" + accountId + ", "  + contactId); 
 
 	models.Account.findById(accountId, function( account ){ 
 	    if ( account ){ 

@@ -27,16 +27,30 @@ define(['SocialNetView',
 	       
 	       addContact: function(){ 
 		   console.log("~/public/js/views/contactView.js | addContact triggered"); 
-		   var $responseArea = this.$(".actionarea"); 
+		   var $responseArea = this.$(".actionarea");
+		   
 		   $.post("/accounts/me/contact", 
-			  {contactId: this.model.get("_id")}, 
-			  function onSuccess(){ 
-			      console.log("~/public/js/views/contactView.js | addContact | onSuccess triggered"); 
-			      $responseArea.text("Contact Added"); 
-			  }, function onError(){ 
+			 {contactId: this.model.get("_id")}, 
+			  function onSuccess(){
+			      $responseArea.text("Contact Added");
+			  }, function onError(){
 			      $responseArea.text("Could not add contact"); 
 			  }
-			 ); 
+			  
+
+	/*		      
+		   $.ajax({
+		       url: "/accounts/me/contact", 
+		       type: "POST", 
+		       data: {contactId: this.model.get("_id")}, 
+		       success: function (data, textStatus, jqXHR){ 
+			      $responseArea.text("Contact Added"); 
+		       }, 
+		       error: function (jqXHR, textStatus, errorThrown){ 
+			      $responseArea.text("Could not add contact"); 
+		       }
+	*/	       
+		   ); 
 	       }, 
 
 
