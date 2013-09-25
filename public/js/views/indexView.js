@@ -26,7 +26,7 @@ define(['SocialNetView',
 	        StatusView, 
 	        Status){
    
-	   var indexView = Backbone.View.extend({
+	   var indexView = SocialNetView.extend({
 	       
 	       el: $('#content'),    //~/views/index.jade
 
@@ -34,11 +34,31 @@ define(['SocialNetView',
 		   'submit form': 'updateStatus'
 	       }, 
 	       
-	       initialize: function(){ 
+	       initialize: function( options ){ 
 		   console.log("~/public/js/views/indexView.js | initialize triggered"); 
-
+		   
+		   options.socketEvents.bind('status:me', this.onSocketStatusAdded, this); 
 		   this.collection.on('add', this.onStatusAdded, this); 
 		   this.collection.on('reset', this.onStatusCollectionReset, this); 
+	       }, 
+
+
+	       onSocketStatusAdded: function( data ){
+
+		   var newStatus = data.data; 
+		   var found = false; 
+
+		   this.collection.forEach(function( status ){ 
+		       var name = status.get('name'); 
+
+		       if( name && name.full == newStatus.name.full && status.get('status') == newStatus.status ) {
+			   found = true; 
+		       }
+		   });
+		   
+		   if( !found ){ 
+		       this.collection.add( new Status({status:newStatus.status, name: newStatus.name}));
+		   }
 	       }, 
 
 	       onStatusCollectionReset: function(collection){
@@ -77,12 +97,11 @@ define(['SocialNetView',
 
 	       updateStatus: function(){
 		   console.log("~/public/js/views/indexView.js | updateStatus triggered"); 
+
 		   var statusText = $('input[name=status]').val(); 
 		   var statusCollection = this.collection; 
 		   $.post('/accounts/me/status', { 
 		       status: statusText
-		   }, function(data) { 
-		       statusCollection.add(new Status({status:statusText})); 
 		   }); 
 		   return false; 
 	       }, 

@@ -97,7 +97,8 @@ define(['views/indexView',
 		   statusCollection.url = 'accounts/me/activity'; 
 		   
 		   this.changeView(new IndexView({ 
-		       collection:statusCollection
+		       collection:statusCollection, 
+		       socketEvents: this.socketEvents
 		   }));
 
 		   statusCollection.fetch();
@@ -127,6 +128,7 @@ define(['views/indexView',
 	       
 
 	       login: function(){
+		   console.log("~/public/js/router.js | login "); 
 		   this.changeView(new LoginView({socketEvents: this.socketEvents})); 
 	       }, 
 
@@ -140,7 +142,8 @@ define(['views/indexView',
 
 	       profile: function(id){
 		   var model = new Account({id:id}); 
-		   this.changeView(new ProfileView({model:model})); 
+		   this.changeView(new ProfileView({model:model, 
+						   socketEvents: this.socketEvents})); 
 		   model.fetch(); 
 	       }, 
 

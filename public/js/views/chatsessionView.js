@@ -9,8 +9,10 @@
 
 define(['SocialNetView', 
 	'text!templates/chatsession.html'], 
-       function(SocialNetView, chatItemTemplate){ 
-	   var chatItemView = SocialNetView.extend({
+       function(SocialNetView, chatSessionTemplate){ 
+
+	   var chatSessionView = SocialNetView.extend({
+
 	       tagName: 'div', 
 	       
 	       $el: $(this.el), 
@@ -21,11 +23,36 @@ define(['SocialNetView',
 	       
 	       initialize: function(options){ 
 		   this.socketEvents = options.socketEvents; 
-		   this.socketEvents.on(
-		       'socket:chat:in:' + this.model.get('accountId'), 
-		       this.receiveChat, 
+		   var accountId = this.model.get('accountId'); 
+		   
+		   this.socketEvents.on('socket:chat:in:' + this.model.get('accountId'), 
+					this.receiveChat,
+					this);
+
+		   this.socketEvents.bind(
+		       'login:' + accountId, 
+		       this.handleContactLogin, 
 		       this
 		   ); 
+		   
+		   this.socketEvents.bind(
+		       'logout:' + accountId, 
+		       this.handleContactLogout, 
+		       this
+		   ); 
+	       }, 
+
+	       handleContactLogin: function(){
+		   this.$el.find('.online_indicator').addClass('online'); 
+		   this.model.set('online', true); 
+	       }, 
+	       
+	       handleContactLogout: function(){
+		   this.model.set('online', false); 
+		   $onlineIndicator = this.$el.find('.online_indicator'); 
+		   while ( $onlineIndicator.hasClass('online') ){ 
+		       $onlineIndicator.removeClass('online'); 
+		   }
 	       }, 
 	       
 	       receiveChat: function( data ) { 
@@ -56,7 +83,8 @@ define(['SocialNetView',
 
 	       sendChat: function(){ 
 		   var chatText = this.$el.find('input[name=chat]').val(); 
-		   if( chatText && /[^\s]+/.test(chatText) ){ 
+		   if( chatText && /[^\s]+/.test(chatText) ){
+		       var chatLine = 'Me: ' + chatText; 
 		       this.$el.find('.chat_log').append($('<li>' + chatLine + '</li>')); 
 		       this.socketEvents.trigger('socket:chat', { 
 			   to: this.model.get('accountId'), 
@@ -68,12 +96,17 @@ define(['SocialNetView',
 	       }, 
 	       
 	       render: function() { 
-		   this.$el.html(_.tempate(chatItemTemplate, { 
+		   this.$el.html(_.tempate(chatSessionTemplate, { 
 		       model:this.model.toJSON()
 		   }));
+		   
+		   if( this.model.get('online') ){ 
+		       this.handleContactLogin(); 
+		   }
+
 		   return this; 
 	       }
 	   }); 
 	   
-	   return chatItemView; 
+	   return chatSessionView; 
 }); 

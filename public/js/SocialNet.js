@@ -19,12 +19,11 @@
 
 
 
+define(['router', 'SocialNetSockets'], function(router, snSocket){ 
+    
 
-
-
-define(['router', 'SocialNetSockets'], function(router, socket){ 
     var initialize = function(){
-	socket.initialize(router.socketEvents); 
+	snSocket.initialize(router.socketEvents); 
 	checkLogin(runApplication); 
     };
 
@@ -32,6 +31,8 @@ define(['router', 'SocialNetSockets'], function(router, socket){
 	$.ajax('/account/authenticated', { 
 	    method:'GET', 
 	    success: function(){
+		return callback(true);
+		router.socketEvents.trigger('app:loggedin', data); 
 		return callback(true); 
 	    }, 
 	    error: function(data){
@@ -42,10 +43,9 @@ define(['router', 'SocialNetSockets'], function(router, socket){
 
     var runApplication = function(authenticated){
 	if( authenticated ){
-	    router.socketEvents.trigger('app:loggedin'); 
-	    window.location.hash = 'index';   //send to ~/#login
+	    window.location.hash = 'index';   //send to ~/#index
 	} else { 
-	    window.location.hash = 'login';   //send to ~/#index
+	    window.location.hash = 'login';   //send to ~/#login
 	}
 	Backbone.history.start(); 
     };

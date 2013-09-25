@@ -10,7 +10,7 @@
 define(['SocialNetView', 
 	'views/chatsessionView', 
 	'views/chatitemView', 
-	'text!template/chat.html'], 
+	'text!templates/chat.html'], 
        function(SocialNetView, ChatSessionView, ChatItemView, chatItemTemplate){
 	   var chatView = SocialNetView.extend({
 	       el: $('#chat'), 

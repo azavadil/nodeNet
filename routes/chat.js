@@ -16,6 +16,10 @@
  *                 login information. 
  * @param accept:  The callback function that should be triggered at the 
  *                 end of an authoriztion cycle 
+ * 
+ * The callback function requires two arguments: error and success
+ * If there was a problem with the handshaek, error will contain
+ * information about the problem. 
  */
 
 module.exports = function(app, models){
@@ -27,6 +31,13 @@ module.exports = function(app, models){
     var sio = io.listen(app.server); 
     
     sio.configure(function(){                //authorization method
+
+	app.isAccountOnline = function( accountId ){ 
+	    var clients = sio.sockets.clients( accountId); 
+	    return (clients.length > 0); 
+	}; 
+
+
 	sio.set('authorization', function(data, accept){
 	    var signedCookies = cookie.parse( data.headers.cookie ); 
 	    var cookies = utils.parseSignedCookies( signedCookies, app.sessionSecret ); 
@@ -62,15 +73,63 @@ module.exports = function(app, models){
 	sio.sockets.on('connection', function(socket){
 	    var session = socket.handshake.session; 
 	    var accountId = session.accountId; 
+	    var sAccount = null; 
 	    socket.join( accountId ); 
 	
-        sio.on('chatclient', function( data ) { 
-	    sio.sockets.in(data.to).emit('chatserver', { 
+
+	    app.triggerEvent('event:' + accountId, {
 		from: accountId, 
-		text: data.text
-	    });
+		action: 'login'
+	    }); 
+
+	    var handleContactEvent = function( eventMessage ){ 
+		socket.emit('contactEvent', eventMessage ); 
+	    };
+
+	    var subscribeToAccount = function( accountId ){ 
+		var eventName = 'event:' + accountId; 
+		app.addEventListener( eventName, handleContactEvent ); 
+		console.log('Subscribing to ' + eventName); 
+	    }; 
+
+	    models.Account.findById(accountId, function subscribeToFriendsFeeds( account ){ 
+		var subscribedAccounts = {}; 
+		sAccount = account; 
+		account.contacts.forEach(function( contact ){ 
+		    if( !subscribedAccounts[contact.accountId]){ 
+			subscribeToAccount(contact.accountId); 
+			subscribedAccounts[contact.accountId] = true; 
+		    }
+		}); 
+		
+		if( !subscribedAccounts[accountId] ){
+		    //
+		    subscribeToAccount(accountId);
+		}
+	    }); 
+	    
+	    socket.on('disconnect', function() {
+		sAccount.contacts.forEach(function( contact ){ 
+		    var eventName = 'event:' + contact.accountId; 
+		    app.removeEventListener( eventName, handleContactEvent ); 
+		    console.log('Unsubscribing from ' + eventName); 
+		}); 
+		
+		app.triggerEvent('event:' + accountId, { 
+		    from: accountId, 
+		    action: 'logout'
+		});
+	    }); 
+		       		       
+
+
+            socket.on('chatclient', function( data ) { 
+		sio.sockets.in(data.to).emit('chatserver', { 
+		    from: accountId, 
+		    text: data.text
+		});
+	    }); 
 	}); 
-    }); 
-  });  
+    });  
 	
 }

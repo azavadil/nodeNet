@@ -16,6 +16,7 @@ define(['SocialNetView',
        function(SocialNetView, profileTemplate, statusTemplate, Status, StatusView){
 	   
 	   var profileView = SocialNetView.extend({
+	
 	       el: $('#content'), 
 
 	       /** 
@@ -47,9 +48,12 @@ define(['SocialNetView',
 		* @param3:    this refers to the view
 		*/ 
 	       
-	       initialize: function(){ 
+	       initialize: function(){
+		   
+		   this.socketEvents = options.socketEvents; 
 		   this.model.bind('change', this.render, this); 
 	       }, 
+
 
 	       /**
 		* Method: postStatus
@@ -68,25 +72,27 @@ define(['SocialNetView',
 		* and it's prependStatus function
 		*/ 
 
-
-	       postStatus: function(){ 
-		   console.log('postStatus triggered'); 
-
+	       postStatus: function(){
 		   var that = this; 
-		   var statusText = $('input[name=status]').val(); 
-		   
+		   var statusText = $('input[name=status]').val();
 		   var statusCollection = this.collection; 
 		   
-		   $.post('/accounts/' + this.model.get('_id') + '/status',  {
+		   $.post('/accounts/' + this.model.get('_id') + '/status', {
 		       status: statusText
-		   }, function( data ) { 
-		       that.prependStatus(new Status( {status: statusText})); 
 		   }); 
-		   return false; //suppress page refresh
+		   return false; 
 	       }, 
+	       
+
+	       onSocketStatusAdded: function( data ) { 
+		   var newStatus = data.data; 
+		   this.prependStatus( new Status({status: newStatus.status, name: newStatus.name}))
+	       }, 
+
 
 	       prependStatus: function(statusModel){ 
 		   console.log('prependStatus triggered'); 
+
 		   var statusHtml = (new StatusView({model:statusModel})).render().el; 
 		   $(statusHtml).prependTo('.status_list').hide().fadeIn('slow'); 
 	       }, 
@@ -100,6 +106,12 @@ define(['SocialNetView',
 		*/ 
 	       
 	       render: function(){
+
+		   if ( this.model.get('_id') ) { 
+		       this.socketEvents.bind('status:' + this.model.get('_id'), this.onSocketStatusAdded, this ); 
+		   }
+		   
+		   var that = this; 
 		   this.$el.html(
 		       _.template(profileTemplate, this.model.toJSON())
 		   ); 
@@ -108,8 +120,7 @@ define(['SocialNetView',
 		   if ( null != statusCollection ){ 
 		       _.each(statusCollection, function ( statusJson ) { 
 			   var statusModel = new Status( statusJson ); 
-			   var statusHtml = (new StatusView({model: statusModel})).render().el; 
-			   $(statusHtml).prependTo('.status_list').hide().fadeIn('slow'); 
+			   that.prependStatus( statusModel ); 
 		       }); 
 		   }
 	       }

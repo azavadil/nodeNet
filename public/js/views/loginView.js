@@ -39,12 +39,21 @@ define(['SocialNetView',
 	 * was put in a local variable because the callback will
 	 * not have access to the view using the keyword this. 
 	 * So the socketEvents property is referenced in a variable
-	 * inside the login function so it is available in the callback. 
+	 * inside the login function so it is available in the callback.
+	 *
+	 * Note that we post the form to the server. In the callback
+	 * function we trigger the 'app:loggedin' message and change
+	 * the window location hash 
 	 */ 
 
 	login: function(){ 
+
 	    var socketEvents = this.socketEvents; 
+
+	    if ( socketEvents != null ) console.log("~/public/js/views/loginView.js | login socketEvents != null");  
+
 	    $.post('/login',  
+
 		this.$('form').serialize(), function( data ) { 
 		    socketEvents.trigger('app:loggedin'); 
 		    window.location.hash = 'index'; 
