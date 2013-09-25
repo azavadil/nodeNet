@@ -31,7 +31,6 @@ define(['router', 'SocialNetSockets'], function(router, snSocket){
 	$.ajax('/account/authenticated', { 
 	    method:'GET', 
 	    success: function(){
-		return callback(true);
 		router.socketEvents.trigger('app:loggedin', data); 
 		return callback(true); 
 	    }, 

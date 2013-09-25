@@ -63,7 +63,7 @@ define(['Sockets',
 			   
 			   var contactsCollection = new ContactCollection(); 
 			   contactsCollection.url = '/accounts/me/contacts'; 
-			   new ChatView({collection: contactsCollection, socketEvents: eventDispatcher}).render(); 
+			   var chatView = new ChatView({collection: contactsCollection, socketEvents: eventDispatcher}).render(); 
 			   chatView.render()
 			   contactsCollection.fetch(); 
 		       }); 
