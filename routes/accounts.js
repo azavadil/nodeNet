@@ -70,11 +70,12 @@ module.exports = function(app, models){
 
 
     app.get('/accounts/:id:/status', function(req, res) {
+
 	var accountId = req.params.id == 'me' 
 	    ? req.session.accountId 
 	    : req.params.id; 
-	models.Account.findById(accountId, function(account){
 
+	models.Account.findById(accountId, function(account){
 	    res.send( account.status ); 
 	}); 
     }); 
@@ -95,9 +96,11 @@ module.exports = function(app, models){
     app.post('/accounts/:id/status', function(req, res){
 
 	console.log("~/routes/accounts.js | post/accounts/:id/status triggered"); 
+
 	var accountId = req.params.id == 'me' 
 	    ? req.session.accountId 
 	    : req.params.id; 
+
 	models.Account.findById( accountId, function( account ){ 
 	    
 	    status = { 
@@ -108,6 +111,7 @@ module.exports = function(app, models){
 
 	    // Push status to all friends
 	    account.activity.push(status); 
+
 	    account.save(function( err ) { 
 		if( err ) { 
 		    console.log('Error saving account: ' + err ); 
@@ -196,14 +200,6 @@ module.exports = function(app, models){
     })
 
 
-    app.get('/account/authenticated', function(req, res){
-	if ( req.session.loggedIn ){ 
-	    res.send(200); 
-	} else { 
-	    res.send(401); 
-	}
-    }); 
-
 
 
 
@@ -217,9 +213,11 @@ module.exports = function(app, models){
 
     app.post('/accounts/:id/contact', function(req, res){
 	console.log("~/routes/accounts.js | post/accounts/:id/contact triggered"); 
+
 	var accountId = req.params.id == 'me'
 	    ? req.session.accountId
 	    : req.params.id; 
+
 	var contactId = req.param('contactId', null); 
 
 	if( null == contactId ){ 
@@ -272,6 +270,8 @@ module.exports = function(app, models){
 		 || models.Account.hasContact(account, req.session.accountId ) ){
 		account.isFriend = true; 
 	    }
+
+	    // ALERT: POSSIBLE SECURITY BREACH HASHED PASSWORD TILL INSIDE OBJECT
 	    res.send( account ); 
 	}); 
     }); 

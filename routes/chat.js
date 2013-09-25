@@ -39,8 +39,10 @@ module.exports = function(app, models){
 
 
 	sio.set('authorization', function(data, accept){
+
 	    var signedCookies = cookie.parse( data.headers.cookie ); 
 	    var cookies = utils.parseSignedCookies( signedCookies, app.sessionSecret ); 
+
 	    data.sessionID = cookies['express.sid']; 
 	    data.sessionStore = app.sessionStore; 
 	    data.sessionStore.get(data.sessionID, function( err, session ){ 
@@ -92,7 +94,7 @@ module.exports = function(app, models){
 		console.log('Subscribing to ' + eventName); 
 	    }; 
 
-	    models.Account.findById(accountId, function subscribeToFriendsFeeds( account ){ 
+	    models.Account.findById(accountId, function subscribeToFriendFeeds( account ){ 
 		var subscribedAccounts = {}; 
 		sAccount = account; 
 		account.contacts.forEach(function( contact ){ 

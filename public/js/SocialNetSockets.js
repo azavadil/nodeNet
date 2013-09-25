@@ -32,6 +32,8 @@ define(['Sockets',
 	'models/ContactCollection',
 	'views/chat'], 
        function(sio, ContactCollection, ChatView){ 
+	   
+
 	   var SocialNetSockets = function( eventDispatcher ){ 
 	       var socket = null;
 	       var accountId = null; 
@@ -41,6 +43,7 @@ define(['Sockets',
 
 		   accountId = socketAccountId; 
 		   socket = io.connect(); 
+	
 		   console.log("~/public/js/SocialNetSockets.js | connectSocket triggered"); 
 		   
 
@@ -53,6 +56,7 @@ define(['Sockets',
 			   console.log("~/public/js/SocialNetSockets.js | connectSocket | .onConnect triggered"); 
 
 			   eventDispatcher.bind('socket:chat', sendChat); 
+		
 			   socket.on('chatserver', function(data) { 
 			       eventDispatcher.trigger('socket:chat:start:' + data.from); 
 			       eventDispatcher.trigger('socket:chat:in:' + data.from, data); 
@@ -61,9 +65,10 @@ define(['Sockets',
 
 			   socket.on('contactEvent', handleContactEvent); 
 			   
+			   
 			   var contactsCollection = new ContactCollection(); 
 			   contactsCollection.url = '/accounts/me/contacts'; 
-			   var chatView = new ChatView({collection: contactsCollection, socketEvents: eventDispatcher}).render(); 
+			   var chatView = new ChatView({collection: contactsCollection, socketEvents: eventDispatcher}); 
 			   chatView.render()
 			   contactsCollection.fetch(); 
 		       }); 

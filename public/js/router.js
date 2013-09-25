@@ -93,6 +93,8 @@ define(['views/index',
 		*/
 
 	       index: function(){ 
+		   console.log('~/public/js/router.js | index triggered'); 
+
 		   var statusCollection = new StatusCollection(); 
 		   statusCollection.url = 'accounts/me/activity'; 
 		   
@@ -129,6 +131,7 @@ define(['views/index',
 
 	       login: function(){
 		   console.log("~/public/js/router.js | login "); 
+
 		   this.changeView(new LoginView({socketEvents: this.socketEvents})); 
 	       }, 
 
@@ -149,12 +152,12 @@ define(['views/index',
 
 	       contacts: function(id){
 		   console.log("~/public/js/router.js | contacts triggered | rendering ContactsView"); 
+
 		   var contactId = id ? id : 'me'; 
 		   var contactsCollection = new ContactCollection(); 
+	
 		   contactsCollection.url = '/accounts/' + contactId + '/contacts'; 
-		   this.changeView( new ContactsView({
-		       collection: contactsCollection 
-		   })); 
+		   this.changeView( new ContactsView( {collection: contactsCollection} )); 
 		   contactsCollection.fetch(); 
 	       }
         }); 
