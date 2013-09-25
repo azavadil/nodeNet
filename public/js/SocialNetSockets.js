@@ -30,7 +30,7 @@
 
 define(['Sockets', 
 	'models/ContactCollection',
-	'views/chatView'], 
+	'views/chat'], 
        function(sio, ContactCollection, ChatView){ 
 	   var SocialNetSockets = function( eventDispatcher ){ 
 	       var socket = null;

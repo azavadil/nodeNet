@@ -17,13 +17,13 @@
 
 
 
-define(['views/indexView', 
-	'views/registerView', 
-	'views/loginView', 
-	'views/forgotPasswordView',
-	'views/profileView', 
-	'views/contactsView', 
-	'views/addcontactView', 
+define(['views/index', 
+	'views/register', 
+	'views/login', 
+	'views/forgotPassword',
+	'views/profile', 
+	'views/contacts', 
+	'views/addcontact', 
 	'models/Account', 
 	'models/StatusCollection', 
 	'models/ContactCollection'], 
