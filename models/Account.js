@@ -1,7 +1,7 @@
  
 
 
-module.exports = function(config, mongoose, nodemailer){
+module.exports = function(app, config, mongoose, nodemailer){
     var crypto = require('crypto'); 
 
     var Status = new mongoose.Schema({

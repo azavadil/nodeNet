@@ -50,7 +50,7 @@ var config = {
 
 // Import the models
 var models = { 
-    Account: require('./models/Account')(config, mongoose, nodemailer)
+    Account: require('./models/Account')(app, config, mongoose, nodemailer)
 }; 
 
 
